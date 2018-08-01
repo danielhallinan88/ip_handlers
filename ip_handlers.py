@@ -93,5 +93,3 @@ def addr_ipv6_to_int(address):
 			else:
 				full_hex += hextet
 	return int(full_hex, 16)
-
-print in_subnet('192.198.1.24', '192.198.1.0/27')
