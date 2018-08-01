@@ -4,25 +4,42 @@ __date__ = '04/21/2016'
 import math
 
 
-# address example: '192.168.1.0', returns integer value of IP
+"""
+Takes an IP and returns its integer value.
+    input:
+	- String: 192.168.1.0
+    return:
+	- int: 3234201856
+"""
 def addr_ip_to_int(address):
         octets = address.split('.')
         tempIP = [ bin(int(octet))[2:].zfill(8) for octet in octets ]
 	return int(''.join(tempIP), 2)
 
 
-# enter IP with mask, example: 192.168.1.0/24)
+"""
+Takes an IP Block and returns a two item tuple containing the integer values of the network address and broadcast address.
+	input:
+	    - String: 192.168.1.0/24
+	return:
+	    - tuple: (3234201856, 3234202112)
+"""
 def first_last_ip(address):
-        netBroad = []
         address = address.split('/')
-        hostBits = 2**(32 - int(address[1]))
-        netAddr = addr_ip_to_int(address[0])
-        broadcastAddr = addr_ip_to_int(address[0]) + hostBits
-        netBroad.append(netAddr)
-        netBroad.append(broadcastAddr)      #returns 2 item list. The first part is the network address, the second part is the broadcast address.
-        return netBroad
+        host_bits = 2**(32 - int(address[1]))
+        net_addr = addr_ip_to_int(address[0])
+        broadcast_addr = addr_ip_to_int(address[0]) + host_bits
+	return net_addr, broadcast_addr
 
 
+"""
+Takes an IP address and an IP subnet and returns true if the IP is within the subnet's bounds.
+	input:
+	    - String: 192.168.1.24
+	    - String: 192.168.1.0/27
+	return:
+	    - boolean: True
+"""
 def in_subnet(address, IPBlock):
         address_int = addr_ip_to_int(address)
         first_addr, last_addr = first_last_ip(IPBlock)
@@ -76,3 +93,5 @@ def addr_ipv6_to_int(address):
 			else:
 				full_hex += hextet
 	return int(full_hex, 16)
+
+print in_subnet('192.198.1.24', '192.198.1.0/27')
