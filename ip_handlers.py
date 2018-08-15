@@ -130,10 +130,3 @@ def subnet_in_supernet(subnet, supernet):
 	sub_net_int, sub_broad_int = IPv4_Block(subnet).first_last_ip()
 	super_net_int, super_broad_int = IPv4_Block(supernet).first_last_ip()
 	return sub_net_int >= super_net_int and sub_broad_int <= super_broad_int
-
-h = "2a03:2880:f003:c07:face:b00c::2"
-print(h)
-i = IPv6().addr_ipv6_to_int(h)
-print(i)
-j = IPv6().addr_int_to_ipv6(i)
-print(j)
