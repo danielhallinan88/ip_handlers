@@ -11,10 +11,13 @@ test_val8 = '10.27.2.0/29'
 test_val9 = '10.27.2.8/29'
 test_val10 = '10.27.2.0/27'
 test_val12 = '10.27.2.16/28'
+test_val13 = '10.0.0.0/8'
 
-print("{} in {} TEST: {}".format(test_val8, test_val4, ip_handlers.subnet_in_supernet(test_val8, test_val4)))
-print("{} in {} TEST: {}".format(test_val9, test_val4, ip_handlers.subnet_in_supernet(test_val9, test_val4)))
-print("{} in {} TEST: {}".format(test_val12, test_val4, ip_handlers.subnet_in_supernet(test_val12, test_val4)))
+block = ip_handlers.all_addr_in_subnet(test_val13)
+
+#print("{} in {} TEST: {}".format(test_val8, test_val4, ip_handlers.subnet_in_supernet(test_val8, test_val4)))
+#print("{} in {} TEST: {}".format(test_val9, test_val4, ip_handlers.subnet_in_supernet(test_val9, test_val4)))
+#print("{} in {} TEST: {}".format(test_val12, test_val4, ip_handlers.subnet_in_supernet(test_val12, test_val4)))
 
 #print("{} in {} TEST: {}".format(test_val5, test_val4, ip_handlers.in_subnet(test_val5, test_val4)))
 #print("{} in {} TEST: {}".format(test_val6, test_val4, ip_handlers.in_subnet(test_val6, test_val4)))

@@ -1,3 +1,4 @@
+from multiprocessing.dummy import Pool
 import math
 import re
 import sys
@@ -26,7 +27,7 @@ class Integer(object):
 
     def int_to_ipv6(self):
 
-        if self.num < 0 or self.num > 340282366920938463463374607431768211455L:
+        if self.num < 0 or self.num > 340282366920938463463374607431768211455:
             raise ValueError('{} is outside the IPv6 range.'.format(self.num))
 
         hex_num = str(hex(self.num)[2:-1])
@@ -74,26 +75,26 @@ class Integer(object):
 class IPv4(object):
 
     def __init__(self, ipv4):
-	self.ipv4 = ipv4
+        self.ipv4 = ipv4
 
     def ipv4_to_int(self):
-	octets    = self.ipv4.split('.')
+        octets    = self.ipv4.split('.')
         temp_ip   = [ bin(int(octet))[2:].zfill(8) for octet in octets ]
 
         return int(''.join(temp_ip), 2)
 
     def __repr__(self):
 
-	return self.ipv4
+        return self.ipv4
 
 class IPv4_Block(IPv4, Integer):
 
     def __init__(self, ipv4_block):
-	self.ipv4_block = ipv4_block
-	self.net_addr, self.sub_mask = self.ipv4_block.split("/")
+        self.ipv4_block = ipv4_block
+        self.net_addr, self.sub_mask = self.ipv4_block.split("/")
 		
     def first_last_ip(self):
-	host_bits          = 2**(32 - int(self.sub_mask))
+        host_bits          = 2**(32 - int(self.sub_mask))
         net_addr_int       = IPv4(self.net_addr).ipv4_to_int()
         broadcast_addr_int = net_addr_int + host_bits - 1
 
@@ -101,37 +102,45 @@ class IPv4_Block(IPv4, Integer):
 
     def __repr__(self):
 
-	return self.ipv4_block
+        return self.ipv4_block
 
 
 class IPv6(object):
 
     def __init__(self, ipv6):
-	self.ipv6 = ipv6
+        self.ipv6 = ipv6
 
     def ipv6_to_int(self):
-	full_hex  = ''
-	hextets   = self.ipv6.split(':')
-	hex_count = len(hextets)
+        full_hex  = ''
+        hextets   = self.ipv6.split(':')
+        hex_count = len(hextets)
 	
-	for hextet in hextets:
-	    if hextet == '':
-	        full_hex += '0000' * (8 - hex_count + 1)
-	    else:
-	        if len(hextet) < 4:
-	            full_hex += ('0' * (4 - len(hextet))) + hextet
-	        else:
-	            full_hex += hextet
+        for hextet in hextets:
+            if hextet == '':
+                full_hex += '0000' * (8 - hex_count + 1)
+            else:
+                if len(hextet) < 4:
+                    full_hex += ('0' * (4 - len(hextet))) + hextet
+                else:
+                    full_hex += hextet
 
         return int(full_hex, 16)
 
+def thread_control(func, inputs, thread_limit=20):
+    pool    = Pool(thread_limit)
+    results = pool.map(func, inputs)
+    pool.close()
+    pool.join()
+
+    return results
+
+# Returns a tuple of the first and last IP of a subnet.
 def first_last_ipv4(block):
-"""Returns a tuple of the first and last IP of a subnet."""
 
     return IPv4(block).first_last_ip()
 
+# Returns a list of all the individual IPs in a subnet.
 def all_addr_in_subnet(block):
-"""Returns a list of all the individual IPs in a subnet"""
 
     net_addr, broad_addr = IPv4_Block(block).first_last_ip()
     net_int   = IPv4(net_addr).ipv4_to_int()
@@ -139,8 +148,8 @@ def all_addr_in_subnet(block):
 
     return [ Integer(i).int_to_ipv4() for i in range(net_int, broad_int + 1) ]
 
+# Returns a boolean of whether the given IP is in the given subnet.
 def in_subnet(addr, subnet):
-"""Returns a boolean of whether the given IP is in the given subnet."""
 
     net_addr, broad_addr = IPv4_Block(subnet).first_last_ip()
     addr_int  = IPv4(addr).ipv4_to_int()
@@ -149,8 +158,8 @@ def in_subnet(addr, subnet):
 
     return addr_int >= net_int and addr_int <= broad_int
 
+# Returns a boolean of whether the given subnet is in the given supernet.
 def subnet_in_supernet(subnet, supernet):
-"""Returns a boolean of whether the given subnet is in the given supernet."""
 
     sub_net, sub_broad = IPv4_Block(subnet).first_last_ip()
     sub_net_int        = IPv4(sub_net).ipv4_to_int()
