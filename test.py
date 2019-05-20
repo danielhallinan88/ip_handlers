@@ -4,15 +4,18 @@ test_val1 = 3402823669209384634633746074317
 test_val2 = 42541956123769884636017138956568135816 #Should = 2001:4860:4860::8888
 test_val3 = 4294967294 # 255.255.255.254
 test_val4 = '10.27.2.0/28'
+test_val5 = '10.27.2.3'
+test_val6 = '10.27.3.33'
+test_val7 = '10.27.1.255'
+test_val8 = '10.27.2.0/29'
+test_val9 = '10.27.2.8/29'
+test_val10 = '10.27.2.0/27'
+test_val12 = '10.27.2.16/28'
 
-print(test_val2)
-val   = ip_handlers.Integer(test_val2)
-val_6 = val.int_to_ipv6()
-print(val_6)
+print("{} in {} TEST: {}".format(test_val8, test_val4, ip_handlers.subnet_in_supernet(test_val8, test_val4)))
+print("{} in {} TEST: {}".format(test_val9, test_val4, ip_handlers.subnet_in_supernet(test_val9, test_val4)))
+print("{} in {} TEST: {}".format(test_val12, test_val4, ip_handlers.subnet_in_supernet(test_val12, test_val4)))
 
-val_6_int = ip_handlers.IPv6(val_6).ipv6_to_int()
-print(val_6_int)
-
-ips = ip_handlers.all_addr_in_subnet(test_val4)
-print(test_val4)
-print(ips)
+#print("{} in {} TEST: {}".format(test_val5, test_val4, ip_handlers.in_subnet(test_val5, test_val4)))
+#print("{} in {} TEST: {}".format(test_val6, test_val4, ip_handlers.in_subnet(test_val6, test_val4)))
+#print("{} in {} TEST: {}".format(test_val7, test_val4, ip_handlers.in_subnet(test_val7, test_val4)))

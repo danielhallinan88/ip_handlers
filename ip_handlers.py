@@ -6,6 +6,7 @@ __author__ = 'Daniel Hallinan'
 __date__   = '04/21/2016'
 
 class Integer(object):
+
     def __init__(self, num):
         self.num = int(num)
 
@@ -82,6 +83,7 @@ class IPv4(object):
         return int(''.join(temp_ip), 2)
 
     def __repr__(self):
+
 	return self.ipv4
 
 class IPv4_Block(IPv4, Integer):
@@ -94,12 +96,11 @@ class IPv4_Block(IPv4, Integer):
 	host_bits          = 2**(32 - int(self.sub_mask))
         net_addr_int       = IPv4(self.net_addr).ipv4_to_int()
         broadcast_addr_int = net_addr_int + host_bits - 1
+
         return Integer(net_addr_int).int_to_ipv4(), Integer(broadcast_addr_int).int_to_ipv4()
-#	net_addr_int       = IPv4().addr_ip_to_int(self.net_addr)
-#	broadcast_addr_int = IPv4().addr_ip_to_int(self.net_addr) + host_bits - 1
-#	return net_addr_int, broadcast_addr_int
 
     def __repr__(self):
+
 	return self.ipv4_block
 
 
@@ -125,26 +126,38 @@ class IPv6(object):
         return int(full_hex, 16)
 
 def first_last_ipv4(block):
+"""Returns a tuple of the first and last IP of a subnet."""
+
     return IPv4(block).first_last_ip()
-#    net_int, broad_int = IPv4_Block(block).first_last_ip()
-#    net_ip             = IPv4().addr_int_to_ip(net_int)
-#    broad_ip           = IPv4().addr_int_to_ip(broad_int)
-#    return net_ip, broad_ip
 
 def all_addr_in_subnet(block):
+"""Returns a list of all the individual IPs in a subnet"""
+
     net_addr, broad_addr = IPv4_Block(block).first_last_ip()
     net_int   = IPv4(net_addr).ipv4_to_int()
     broad_int = IPv4(broad_addr).ipv4_to_int()
-    return [ Integer(i).int_to_ipv4() for i in range(net_int, broad_int + 1) ]
-#    net_int, broad_int = IPv4_Block(block).first_last_ip()
-#    return [ IPv4().addr_int_to_ip(i) for i in range(net_int, broad_int + 1) ]
 
-def in_subnet(address, IPBlock):
-    addr_int           = IPv4().addr_ip_to_int(address)
-    net_int, broad_int = IPv4_Block(IPBlock).first_last_ip()
+    return [ Integer(i).int_to_ipv4() for i in range(net_int, broad_int + 1) ]
+
+def in_subnet(addr, subnet):
+"""Returns a boolean of whether the given IP is in the given subnet."""
+
+    net_addr, broad_addr = IPv4_Block(subnet).first_last_ip()
+    addr_int  = IPv4(addr).ipv4_to_int()
+    net_int   = IPv4(net_addr).ipv4_to_int()
+    broad_int = IPv4(broad_addr).ipv4_to_int()
+
     return addr_int >= net_int and addr_int <= broad_int
 
-def subnet_in_supernet(subnet, supernet):    
-    sub_net_int, sub_broad_int     = IPv4_Block(subnet).first_last_ip()
-    super_net_int, super_broad_int = IPv4_Block(supernet).first_last_ip()
+def subnet_in_supernet(subnet, supernet):
+"""Returns a boolean of whether the given subnet is in the given supernet."""
+
+    sub_net, sub_broad = IPv4_Block(subnet).first_last_ip()
+    sub_net_int        = IPv4(sub_net).ipv4_to_int()
+    sub_broad_int      = IPv4(sub_broad).ipv4_to_int()
+
+    super_net, super_broad = IPv4_Block(supernet).first_last_ip()
+    super_net_int          = IPv4(super_net).ipv4_to_int()
+    super_broad_int        = IPv4(super_broad).ipv4_to_int()
+
     return sub_net_int >= super_net_int and sub_broad_int <= super_broad_int
