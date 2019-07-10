@@ -1,4 +1,4 @@
-from multiprocessing.dummy import Pool
+from multiprocessing import Pool, cpu_count
 import math
 import re
 import sys
@@ -126,17 +126,11 @@ class IPv6(object):
 
         return int(full_hex, 16)
 
-def thread_control(func, inputs, thread_limit=20):
-    pool    = Pool(thread_limit)
-    results = pool.map(func, inputs)
-    pool.close()
-    pool.join()
-
-    return results
+def int_to_ipv4(num):
+    return Integer(num).int_to_ipv4()
 
 # Returns a tuple of the first and last IP of a subnet.
 def first_last_ipv4(block):
-
     return IPv4(block).first_last_ip()
 
 # Returns a list of all the individual IPs in a subnet.
@@ -146,7 +140,14 @@ def all_addr_in_subnet(block):
     net_int   = IPv4(net_addr).ipv4_to_int()
     broad_int = IPv4(broad_addr).ipv4_to_int()
 
-    return [ Integer(i).int_to_ipv4() for i in range(net_int, broad_int + 1) ]
+    block_int = range(net_int, broad_int + 1)
+
+    if len(block_int) < 32768:
+        return [ Integer(i).int_to_ipv4() for i in range(net_int, broad_int + 1) ]
+
+    else:
+        with Pool(cpu_count()) as p:
+            return p.map(int_to_ipv4 , range(net_int, broad_int + 1))
 
 # Returns a boolean of whether the given IP is in the given subnet.
 def in_subnet(addr, subnet):
